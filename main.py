@@ -1,9 +1,11 @@
 from board_manager import read_chessboard, validate_initial_setup
 from move_logic import detect_move, validate_move
-
+from ai_turn import chessboard_to_fen, get_ai_move, check_game_status
+import chess
 
 CHESSBOARD_FILE_PATH = "C:/Users/nisch/Desktop/CPR/chessboard.json" #TODO: CHANGE THIS TO THE CORRECT PATH IN RASPBERY PI
-
+HUMAN_COLOR = "white"
+AI_COLOR = "black"
 
 def initialize_game():
     print("Initializing CPR...")
@@ -17,8 +19,17 @@ def initialize_game():
     return chessboard
 
 def handle_human_turn():
-    print("Human's turn")
     old_chessboard= read_chessboard(CHESSBOARD_FILE_PATH)
+    
+    chessboard_fen = chessboard_to_fen(old_chessboard, HUMAN_COLOR)
+    game_status = check_game_status(chess.Board(chessboard_fen))
+    
+    if game_status:
+        print(f"Game Over: {game_status}")
+        return None
+    
+    
+    print("Human's turn")
     
     # To prevent infinite loops, seting a maximum number of retries
     retry_count = 0
@@ -58,16 +69,22 @@ def handle_human_turn():
 
 
 def handle_ai_turn():
-    print("AI's turn")
-    # AI player's move logic
-    return "a7a5"
+    print("\nAI's turn\n")
+    chessboard = read_chessboard(CHESSBOARD_FILE_PATH)
+    chessboard_fen = chessboard_to_fen(chessboard, AI_COLOR)
+    game_status = check_game_status(chess.Board(chessboard_fen))
+    
+    if game_status:
+        print(f"Game Over: {game_status}")
+        return None
+    
+    ai_move = get_ai_move(chessboard_fen, AI_COLOR, difficulty="hard")
+    
+    return ai_move
 
-def check_game_over():
-    # Game over logic
-    return True
 
 def start_game():
-    start_condition = True
+    start_condition = False
     while(start_condition):
         chessboard = initialize_game()
         if chessboard is None:
@@ -77,19 +94,28 @@ def start_game():
     
     
     game_over = False
-    current_turn = "human"
+    if HUMAN_COLOR == "white":
+        current_turn = "human"
+    else:
+        current_turn = "ai"
     
     while not game_over:
         if current_turn == "human":
             move = handle_human_turn()
+            if move is None:
+                game_over = True
+                break
             print(f"Human moved: {move}")
             current_turn = "ai"
         else:
             ai_move = handle_ai_turn()
+            if ai_move is None:
+                game_over = True
+                break
             print(f"AI moved: {ai_move}")
+            input("Press Enter to continue")
             current_turn = "human"
-        
-        game_over = check_game_over()
+
 
     print("Game Over!")
 if __name__ == "__main__":

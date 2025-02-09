@@ -15,7 +15,10 @@ def detect_move(old_chessboard, new_chessboard):
 
     # Case 3: Single move detected
     moved_from = next((sq for sq in changes if old_chessboard[sq] != "empty" and new_chessboard[sq] == "empty"), None)
-    moved_to = next((sq for sq in changes if old_chessboard[sq] == "empty" and new_chessboard[sq] != "empty"), None)
+    if(moved_from != None):
+        moved_to = next((sq for sq in changes if old_chessboard[moved_from] == new_chessboard[sq]), None)
+    else:
+        moved_to = None
 
     if moved_from and moved_to:
         return {
