@@ -1,6 +1,6 @@
 {
     "a1": "white_rook",
-    "b1": "white_knight",
+    "b1": "empty",
     "c1": "white_bishop",
     "d1": "white_queen",
     "e1": "white_king",
@@ -31,7 +31,7 @@
     "f8": "black_bishop",
     "g8": "black_knight",
     "h8": "black_rook",
-    "a3": "empty",
+    "a3": "white_knight",
     "b3": "empty",
     "c3": "empty",
     "d3": "empty",
