@@ -14,8 +14,9 @@ pca.frequency = 50
 # Initialize servo on channel 0 : THis is the gripper one (new one we added)
 gripper_servo = servo.Servo(pca.channels[0], min_pulse=500, max_pulse=2500)
 
-CLOSE_POS= 178
-OPEN_POS = 168
+CLOSE_POS= 179
+HALF_OPEN = 172
+OPEN_POS = 168.2
 
 #serial connection
 ser = serial.Serial("/dev/ttyUSB0", baudrate=115200, timeout=1)
@@ -62,12 +63,14 @@ def execute_positions(position_file):
             move_to_position(position)
 
             if position.get("grab"):
+                time.sleep(1)
                 gripper_servo.angle = CLOSE_POS
-                time.sleep(2)
+                time.sleep(1)
 
             if position.get("release"):
+                time.sleep(1)
                 gripper_servo.angle = OPEN_POS
-                time.sleep(2)
+                time.sleep(1)
 
         print("Movement sequence complete!")
 
@@ -83,6 +86,6 @@ def pick_place_from_to(action, square):
 # Run the movement sequence
 if __name__ == "__main__":
     gripper_servo.angle =  OPEN_POS
-    pick_place_from_to("pickup","e7")
-    pick_place_from_to("placedown","c1")
+    pick_place_from_to("pickup","h5")
+    pick_place_from_to("placedown","h3")
     ser.close()

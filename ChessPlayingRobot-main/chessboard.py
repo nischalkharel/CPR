@@ -36,35 +36,33 @@ class ChessSetupChecker:
                 self.initial_positions[f"{col}{row}"] = "empty"
 
     def map_pins(self):
-        """Map MCP23017 pins to chessboard positions."""
+        """Map MCP23017 pins to chessboard positions with correct wiring."""
         pins = {}
-        # Mapping for mcp_0x25 (row 1 and row 2)
-        for pin_num, (col, row) in enumerate([(c, r) for r in range(1, 3) for c in "abcdefgh"]):
-            pin = self.mcp_0x25.get_pin(pin_num)
-            pin.direction = Direction.INPUT
-            pin.pull = Pull.UP
-            pins[f"{col}{row}"] = pin
 
-        # Mapping for mcp_0x27 (row 3 and row 4)
-        for pin_num, (col, row) in enumerate([(c, r) for r in range(3, 5) for c in "abcdefgh"]):
-            pin = self.mcp_0x27.get_pin(pin_num)
-            pin.direction = Direction.INPUT
-            pin.pull = Pull.UP
-            pins[f"{col}{row}"] = pin
+        def map_row(mcp, port, start_square, reverse=True):
+            col_order = "hgfedcba" if reverse else "abcdefgh"
+            row = start_square[1]
+            for i, col in enumerate(col_order):
+                pin = mcp.get_pin(i if port == 'a' else i + 8)
+                pin.direction = Direction.INPUT
+                pin.pull = Pull.UP
+                pins[f"{col}{row}"] = pin
 
-        # Mapping for mcp_0x26 (row 5 and row 6)
-        for pin_num, (col, row) in enumerate([(c, r) for r in range(5, 7) for c in "abcdefgh"]):
-            pin = self.mcp_0x26.get_pin(pin_num)
-            pin.direction = Direction.INPUT
-            pin.pull = Pull.UP
-            pins[f"{col}{row}"] = pin
+        # 0x27 - Rows 1 (port B) and 2 (port A)
+        map_row(self.mcp_0x27, 'b', 'h1')  # h1 to a1
+        map_row(self.mcp_0x27, 'a', 'h2')  # h2 to a2
 
-        # Mapping for mcp_0x23 (row 7 and row 8)
-        for pin_num, (col, row) in enumerate([(c, r) for r in range(7, 9) for c in "abcdefgh"]):
-            pin = self.mcp_0x23.get_pin(pin_num)
-            pin.direction = Direction.INPUT
-            pin.pull = Pull.UP
-            pins[f"{col}{row}"] = pin
+        # 0x23 - Rows 3 (port A) and 4 (port B)
+        map_row(self.mcp_0x23, 'a', 'h3')  # h3 to a3
+        map_row(self.mcp_0x23, 'b', 'h4')  # h4 to a4
+
+        # 0x26 - Rows 5 (port B) and 6 (port A)
+        map_row(self.mcp_0x26, 'b', 'h5')  # h5 to a5
+        map_row(self.mcp_0x26, 'a', 'h6')  # h6 to a6
+
+        # 0x25 - Rows 7 (port B) and 8 (port A)
+        map_row(self.mcp_0x25, 'b', 'h7')  # h7 to a7
+        map_row(self.mcp_0x25, 'a', 'h8')  # h8 to a8
 
         return pins
 
