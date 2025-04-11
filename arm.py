@@ -23,9 +23,6 @@ ser = serial.Serial("/dev/ttyUSB0", baudrate=115200, timeout=1)
 ser.setRTS(False)
 ser.setDTR(False)
 
-# File containing pre-recorded positions
-pickup_position_file = "pickup_g8.json"
-placedown_position_file = "placedown_g8.json"
 
 # Function to send a command to the RoArm
 def send_command(command):
@@ -82,10 +79,7 @@ def execute_positions(position_file):
 def pick_place_from_to(action, square):
 	file_to_pull = f"{action}_{square}.json"
 	execute_positions(file_to_pull)
-	        
-# Run the movement sequence
-if __name__ == "__main__":
-    gripper_servo.angle =  OPEN_POS
-    pick_place_from_to("pickup","b1")
-    pick_place_from_to("placedown","c3")
-    ser.close()
+
+def open_gripper():
+	gripper_servo.angle =  OPEN_POS
+
